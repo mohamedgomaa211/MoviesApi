@@ -48,6 +48,9 @@ namespace MoviesApi.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
+                    b.Property<byte>("GenreId")
+                        .HasColumnType("tinyint");
+
                     b.Property<byte[]>("Poster")
                         .IsRequired()
                         .HasColumnType("varbinary(max)");
@@ -69,7 +72,25 @@ namespace MoviesApi.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("GenreId");
+
                     b.ToTable("moives");
+                });
+
+            modelBuilder.Entity("MoviesApi.Models.Moive", b =>
+                {
+                    b.HasOne("MoviesApi.Models.Genre", "Genre")
+                        .WithMany("moives")
+                        .HasForeignKey("GenreId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Genre");
+                });
+
+            modelBuilder.Entity("MoviesApi.Models.Genre", b =>
+                {
+                    b.Navigation("moives");
                 });
 #pragma warning restore 612, 618
         }

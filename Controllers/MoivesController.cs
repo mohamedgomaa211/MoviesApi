@@ -16,6 +16,43 @@ namespace MoviesApi.Controllers
         {
             _context = context;
         }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllAsync()
+        {
+
+            var moives = await _context.moives.
+                Include(m=>m.Genre)
+                .OrderByDescending(x=>x.Rate)
+                .Select(m=> new MoivesDetailsDto
+                {
+                    Id = m.Id,
+                    GenreId = m.GenreId,    
+                    Title = m.Title,   
+                    year = m.year,
+                    StoryLine =   m.StoryLine,
+                    Rate = m.Rate,  
+                    GenreName=m.Genre.Name,
+                    Poster=m.Poster,
+
+                })
+                .ToListAsync();
+            return Ok(moives);
+            
+        }
+        [HttpGet("id")]
+
+        public async Task<IActionResult> GetByIdAsync(int id)
+        {
+
+            var moive= await _context.moives.FindAsync(id);
+            if(moive == null)
+            {
+                return BadRequest($"No {id} found");
+
+            }
+            return Ok(moive);
+        }
         [HttpPost]
         public async Task <IActionResult> CreateAsync( [FromForm]MoivesInputDto moivesInputDto)
         {
@@ -35,7 +72,7 @@ namespace MoviesApi.Controllers
                 StoryLine = moivesInputDto.StoryLine,
                 year = moivesInputDto.year,
                 Poster = datastream.ToArray(),
-                //GenreId = moivesInputDto.GenreId,
+                GenreId = moivesInputDto.GenreId,
 
 
 

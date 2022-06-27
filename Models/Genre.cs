@@ -10,6 +10,7 @@ namespace MoviesApi.Models
         [MaxLength(100)]
         public string Name { get; set; }
 
+        public ICollection<Moive> moives { get; set; }
         
     }
 }
