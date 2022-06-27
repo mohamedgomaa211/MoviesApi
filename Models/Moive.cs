@@ -16,8 +16,9 @@
         public string StoryLine { get; set; }
 
 
-        public byte GenreId { get; set; }
-        public Genre Genre { get; set; }
+        //public byte GenreId { get; set; }
+
+        //public Genre Genre { get; set; }
 
 
     }

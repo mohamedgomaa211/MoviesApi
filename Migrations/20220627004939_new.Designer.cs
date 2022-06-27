@@ -12,8 +12,8 @@ using MoviesApi.Models;
 namespace MoviesApi.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20220626225834_addmoivetable")]
-    partial class addmoivetable
+    [Migration("20220627004939_new")]
+    partial class @new
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -51,12 +51,6 @@ namespace MoviesApi.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
-                    b.Property<int>("GenreId")
-                        .HasColumnType("int");
-
-                    b.Property<byte>("GenreId1")
-                        .HasColumnType("tinyint");
-
                     b.Property<byte[]>("Poster")
                         .IsRequired()
                         .HasColumnType("varbinary(max)");
@@ -78,20 +72,7 @@ namespace MoviesApi.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("GenreId1");
-
                     b.ToTable("moives");
-                });
-
-            modelBuilder.Entity("MoviesApi.Models.Moive", b =>
-                {
-                    b.HasOne("MoviesApi.Models.Genre", "Genre")
-                        .WithMany()
-                        .HasForeignKey("GenreId1")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Genre");
                 });
 #pragma warning restore 612, 618
         }

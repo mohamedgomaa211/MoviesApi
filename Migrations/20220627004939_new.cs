@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace MoviesApi.Migrations
 {
     /// <inheritdoc />
-    public partial class addmoivetable : Migration
+    public partial class @new : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -21,25 +21,12 @@ namespace MoviesApi.Migrations
                     Poster = table.Column<byte[]>(type: "varbinary(max)", nullable: false),
                     Rate = table.Column<double>(type: "float", nullable: false),
                     year = table.Column<int>(type: "int", nullable: false),
-                    StoryLine = table.Column<string>(type: "nvarchar(2500)", maxLength: 2500, nullable: false),
-                    GenreId = table.Column<int>(type: "int", nullable: false),
-                    GenreId1 = table.Column<byte>(type: "tinyint", nullable: false)
+                    StoryLine = table.Column<string>(type: "nvarchar(2500)", maxLength: 2500, nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_moives", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_moives_Genres_GenreId1",
-                        column: x => x.GenreId1,
-                        principalTable: "Genres",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
                 });
-
-            migrationBuilder.CreateIndex(
-                name: "IX_moives_GenreId1",
-                table: "moives",
-                column: "GenreId1");
         }
 
         /// <inheritdoc />
