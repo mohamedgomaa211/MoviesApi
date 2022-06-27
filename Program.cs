@@ -7,7 +7,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 var connectionstring = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<ApplicationDbContext>(options=>
-options.UseSqlServer("connectionstring"));
+options.UseSqlServer(connectionstring));
 builder.Services.AddControllers();
 builder.Services.AddCors(); 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -35,35 +35,35 @@ builder.Services.AddSwaggerGen(options =>
 
 
     });
-    options.AddSecurityDefinition(name: "Bearer", new OpenApiSecurityScheme
-    {
-        Name ="Authoriztion",
-        Type =SecuritySchemeType.ApiKey,
-        Scheme= "Bearer",
-        BearerFormat ="jwt",
-        In=ParameterLocation.Header,
-        Description ="enter  your jwt key"
-    });
-    options.AddSecurityRequirement(securityRequirement: new OpenApiSecurityRequirement
-    {
-        {
-            new OpenApiSecurityScheme
-            {
-                Reference= new OpenApiReference
-                {
+    //options.AddSecurityDefinition(name: "Bearer", new OpenApiSecurityScheme
+    //{
+    //    Name ="Authoriztion",
+    //    Type =SecuritySchemeType.ApiKey,
+    //    Scheme= "Bearer",
+    //    BearerFormat ="jwt",
+    //    In=ParameterLocation.Header,
+    //    Description ="enter  your jwt key"
+    //});
+    //options.AddSecurityRequirement(securityRequirement: new OpenApiSecurityRequirement
+    //{
+    //    {
+    //        new OpenApiSecurityScheme
+    //        {
+    //            Reference= new OpenApiReference
+    //            {
 
-                    Type=ReferenceType.SecurityScheme,
-                    Id="Bearer"
-                },
-                Name="Bearer",
-                In=ParameterLocation.Header
+    //                Type=ReferenceType.SecurityScheme,
+    //                Id="Bearer"
+    //            },
+    //            Name="Bearer",
+    //            In=ParameterLocation.Header
 
-            },
-            new List<string>()
+    //        },
+    //        new List<string>()
 
-        }
+    //    }
 
-    });
+    //});
 });
 
 var app = builder.Build();

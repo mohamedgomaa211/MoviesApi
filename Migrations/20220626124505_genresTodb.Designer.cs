@@ -11,8 +11,8 @@ using MoviesApi.Models;
 namespace MoviesApi.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20220626002128_AddingGenreTable")]
-    partial class AddingGenreTable
+    [Migration("20220626124505_genresTodb")]
+    partial class genresTodb
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

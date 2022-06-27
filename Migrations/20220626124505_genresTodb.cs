@@ -5,7 +5,7 @@
 namespace MoviesApi.Migrations
 {
     /// <inheritdoc />
-    public partial class AddingGenreTable : Migration
+    public partial class genresTodb : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
