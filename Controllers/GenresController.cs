@@ -48,6 +48,7 @@ namespace MoviesApi.Controllers
 
         public async Task<IActionResult> UpdateAsync(int id ,[FromBody]  GenreInputDto genreInputDto)
         {
+            
            var genre= await _context.Genres.SingleOrDefaultAsync(g=>g.Id==id);
             if (genre == null)
             {
