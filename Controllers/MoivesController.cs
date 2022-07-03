@@ -1,5 +1,9 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using MoviesApi.Dtos;
+using MoviesApi.Models;
+using MoviesApi.Services.Interfaces;
 
 namespace MoviesApi.Controllers
 {
@@ -7,51 +11,52 @@ namespace MoviesApi.Controllers
     [ApiController]
     public class MoivesController : ControllerBase
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IMoivesService moivesService;
+        readonly IGenresService genresService;
+        private readonly IMapper _mapper;
+
 
         private new List<string> _allowedExtentions = new List<string>() { ".jpg", ".png" };
         private long _MaxAllowedPosterSize = 1048576;
 
-        public MoivesController(ApplicationDbContext context)
+        public MoivesController(IMoivesService moivesService, IGenresService genresService, IMapper mapper)
         {
-            _context = context;
+            this.moivesService = moivesService;
+            this.genresService = genresService;
+            _mapper = mapper;
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllAsync()
+        public async Task<IActionResult> GetAllAsync(byte genreId)
         {
 
-            var moives = await _context.moives.
-                Include(m => m.Genre)
-                .OrderByDescending(x => x.Rate)
-                .Select(m => new MoivesDetailsDto
-                {
-                    Id = m.Id,
-                    GenreId = m.GenreId,
-                    Title = m.Title,
-                    year = m.year,
-                    StoryLine = m.StoryLine,
-                    Rate = m.Rate,
-                    GenreName = m.Genre.Name,
-                    Poster = m.Poster,
-
-                })
-                .ToListAsync();
-            return Ok(moives);
+            var moives = await moivesService.GetAll( genreId);
+            var data = _mapper.Map<IEnumerable<MoivesDetailsDto>>(moives);
+            return Ok(data);
 
         }
-        [HttpGet("id")]
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetByIdAsync(int  id)
+        {
+            var moive = await moivesService.GetMoiveByIdAsync(id);
+            if(moive == null)
+            {
+                return NotFound();
+            }
+            var dto = _mapper.Map<MoivesDetailsDto>(moive);
+            return Ok(dto);
 
-        public async Task<IActionResult> GetByIdAsync(int id)
+        }
+
+        [HttpGet("GetByGenreId")]
+
+        public async Task<IActionResult> GetByGenreIdAsync(byte id)
         {
 
-            var moive = await _context.moives.FindAsync(id);
-            if (moive == null)
-            {
-                return BadRequest($"No {id} found");
+            var moives = await moivesService.GetAll(id);
+            var data = _mapper.Map<IEnumerable<MoivesDetailsDto>>(moives);
 
-            }
-            return Ok(moive);
+            return Ok(data);
         }
         [HttpPost]
         public async Task<IActionResult> CreateAsync([FromForm] MoivesInputDto moivesInputDto)
@@ -64,29 +69,19 @@ namespace MoviesApi.Controllers
             using var datastream = new MemoryStream();
 
             await moivesInputDto.Poster.CopyToAsync(datastream);
+            var isValidGenre = await genresService.GetMoiveGenre(moivesInputDto.GenreId);
 
-            var moive = new Moive()
-            {
-                Title = moivesInputDto.Title,
-                Rate = moivesInputDto.Rate,
-                StoryLine = moivesInputDto.StoryLine,
-                year = moivesInputDto.year,
-                Poster = datastream.ToArray(),
-                GenreId = moivesInputDto.GenreId,
+            var movie = _mapper.Map<Moive>(moivesInputDto);
 
+            moivesService.Add(movie);
 
-
-            };
-            await _context.moives.AddAsync(moive);
-
-            _context.SaveChanges();
-            return Ok(moive);
+            return Ok(movie);
 
         }
         [HttpPut("id")]
         public async Task<IActionResult> UpdateAsync(int id, [FromForm] MoivesInputDto moivesInputDto)
         {
-            var data = await _context.moives.FindAsync( id);
+            var data = await moivesService.GetMoiveByIdAsync(id);
 
             if (moivesInputDto.Poster == null)
             {
@@ -110,24 +105,23 @@ namespace MoviesApi.Controllers
                 data.Poster = datastream.ToArray();
             }
 
-            var vaildGenre=_context.moives.AnyAsync(x => x.Id == moivesInputDto.GenreId);
+            var vaildGenre = genresService.GetMoiveGenre(moivesInputDto.GenreId);
             if (vaildGenre == null)
                 return BadRequest("invaildGenreId");
-            _context.SaveChanges();
+            moivesService.Update(data);
             return Ok(data);
 
         }
         [HttpDelete("id")]
         public async Task<IActionResult> DeleteAsnc(int id)
         {
-            var moive = await _context.moives.FindAsync(id);
+            var moive = await moivesService.GetMoiveByIdAsync(id);
             if (moive == null)
             {
                 return NotFound($"there is no moive with id ={id}");
 
             }
-            _context.Remove(moive);
-            _context.SaveChanges();
+            moivesService .Delete(moive);
             return Ok(moive);
         }
     }
